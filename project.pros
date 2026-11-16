@@ -1,7 +1,7 @@
 {
     "py/object": "pros.conductor.project.Project",
     "py/state": {
-        "project_name": "Nitrogen1",
+        "project_name": "Nitrogen3",
         "target": "v5",
         "templates": {
             "kernel": {
