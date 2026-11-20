@@ -6,8 +6,8 @@
 #include "nitrogen/recordnreplay/buttonlog.hpp"
 #include "nitrogen/neobjects/neomotor.h"
 
-NeoMotor left_mg("left", {-6, -7});
-NeoMotor right_mg("right", {8, 9});
+NeoMotor left_mg("left", {-6, -7, -8});
+NeoMotor right_mg("right", {9, 10, 11});
 
 int runid;
 
