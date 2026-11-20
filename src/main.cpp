@@ -12,7 +12,7 @@ NeoMotor left_mg("left", {-6, -7, -8});
 NeoMotor right_mg("right", {9, 10, 11});
 
 NeoMotor intake("intake", {14, 15});
-
+pros::Motor intakeGetter(14);
 int runid;
 
 // Trim por lado: offset (+/-) que se suma a la MAGNITUD de la potencia, para compensar un robot que tira mas de un lado.
@@ -455,7 +455,7 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 int targetAngle = 0; 
 
 void subirMotores(){
-	int angle = intake.get_position();
+	int angle = intakeGetter.get_position();
 	if (angle >= 2990) {
 		master.rumble("..");
 	} else {
@@ -465,7 +465,7 @@ void subirMotores(){
 }
 
 void bajarMotores(){
-	int angle = intake.get_position();
+	int angle = intakeGetter.get_position();
 	if (angle <= 0) {
 		master.rumble("..");
 	} else {
@@ -489,7 +489,7 @@ void opcontrol() {
 		intake.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
 		intake.move(0); // suelta el motor para poder girarlo a mano
 		while (true) {
-			std::vector<double> p = intake.get_position_all();
+			std::vector<double> p = intakeGetter.get_position_all();
 			pros::lcd::print(1, "intake prom: %.1f", intake.get_position());
 			for (size_t i = 0; i < p.size() && i < 4; i++) pros::lcd::print(2 + i, "motor %d: %.1f", (int)i, p[i]);
 			pros::delay(50);
