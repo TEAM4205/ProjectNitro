@@ -24,4 +24,4 @@ Molotov:
 * Documentar la lista de elementos de UI basicos
 * Documentar que puede hacer Molotov por las graficas 
 
-HOLA SOY KATHERINE
+HOLA SOY KATHERINEE
