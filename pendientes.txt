@@ -23,3 +23,5 @@ Molotov:
 * Documentar las necesidades basicas que debe cubrir Molotov
 * Documentar la lista de elementos de UI basicos
 * Documentar que puede hacer Molotov por las graficas 
+
+HOLA SOY KATHERINE
