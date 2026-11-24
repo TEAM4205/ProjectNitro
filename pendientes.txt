@@ -24,4 +24,4 @@ Molotov:
 * Documentar la lista de elementos de UI basicos
 * Documentar que puede hacer Molotov por las graficas 
 
-2 + 3 =
+2 + 3 = 5
