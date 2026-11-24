@@ -1,2 +1,25 @@
-* Hacer el PID del LonTune
-* 
+Por filosofia de Nitrogen3 (y evitarnos retrasos lol)
+Nitrogen3 tendrá cada módulo al minimo viable
+
+ahh y se le pregunta a la IA
+-- NO NOS REEMPLAZARÁ LA IA --
+(al menos no en momentos tranquilos, en apuros, viva Claude Code)
+
+NeoCode:
+* Averiguar como funciona una extension de VSCODE
+* Ver si es mejor usar cpp o hpp idk como integrarlo
+* Revisar el diseño de actions.cpp
+* Codificar el parser de actions.cpp
+* Revisar el diseño de hooks.cpp
+* Codificar el parser de hooks.cpp
+* Revisar el diseño de profiles.cpp
+* Codificar el parser de profiles.cpp
+* Ver como se modifica el Makefile, como funciona, y ver como incluyo el parse como paso extra
+* Ver como detectar que la extension detecte un project.pros
+* Compilar la extension y documentarla
+
+Molotov:
+* Averiguar como funciona bien una libreria grafica
+* Documentar las necesidades basicas que debe cubrir Molotov
+* Documentar la lista de elementos de UI basicos
+* Documentar que puede hacer Molotov por las graficas 

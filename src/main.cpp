@@ -6,13 +6,14 @@
 #include "nitrogen/recordnreplay/buttonlog.hpp"
 #include "nitrogen/neobjects/neomotor.h"
 #include "nitrogen/elementals/native_menu_mgr.hpp"
+#include "nitrogen/vision/override_vision.hpp"
+
+constexpr int VISION_PORT = 1; // puerto del Vision Sensor: cambiar al real
 #include "pros/motors.h"
 
 NeoMotor left_mg("left", {-6, -7, -8});
 NeoMotor right_mg("right", {9, 10, 11});
 
-NeoMotor intake("intake", {14, 15});
-pros::Motor intakeGetter(14);
 int runid;
 
 // Trim por lado: offset (+/-) que se suma a la MAGNITUD de la potencia, para compensar un robot que tira mas de un lado.
@@ -242,8 +243,9 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+	ovision::init(VISION_PORT); // firmas, ejemplos y calibracion guardados en /usd/vision.txt
 
-// 	rnr::init();                  // las tasks del Record'n'Replay nacen aca y sobreviven a los cambios de modo
+// 	rnr::init();                 // las tasks del Record'n'Replay nacen aca y sobreviven a los cambios de modo
 // 	Recorder::attach_controller();
 // }
 }
@@ -452,111 +454,37 @@ void autonomous() {}
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-int targetAngle = 0; 
+constexpr double CALIB_CM = 30.0; // boton A: se pone un pin a esta distancia de la camara para calibrar
 
-void subirMotores(){
-	int angle = intakeGetter.get_position();
-	if (angle >= 2990) {
-		master.rumble("..");
-	} else {
-		targetAngle = 2990;
-		intake.move_absolute(2990, 100);
-	}
-}
-
-void bajarMotores(){
-	int angle = intakeGetter.get_position();
-	if (angle <= 0) {
-		master.rumble("..");
-	} else {
-		targetAngle = 0;
-		intake.move_absolute(0, 100);
-	}
-}
-
-
-void resetMotores(){
-	intake.set_gearing_all(pros::MotorGears::red);
-	intake.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
-}
-// Tanque regular: stick izq -> lado izq, stick der -> lado der, D-pad como respaldo. Trim solo con X+Y+L1+R1.
-// true: el intake queda en coast y se muestra su posicion en el LCD (mover a mano); no maneja el robot
-constexpr bool CALIBRAR_INTAKE = false;
-
+// Muestra en pros::lcd el pin mas cercano: que es, cercania 0-100 (suavizada) y distancia.
+// A: calibra la distancia (pin a CALIB_CM).  B: modo camara (dibuja lo que ve y ajusta firmas; B otra vez sale).
 void opcontrol() {
-	if (CALIBRAR_INTAKE) {
-		intake.set_gearing_all(pros::MotorGears::red);
-		intake.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
-		intake.move(0); // suelta el motor para poder girarlo a mano
-		while (true) {
-			std::vector<double> p = intakeGetter.get_position_all();
-			pros::lcd::print(1, "intake prom: %.1f", intake.get_position());
-			for (size_t i = 0; i < p.size() && i < 4; i++) pros::lcd::print(2 + i, "motor %d: %.1f", (int)i, p[i]);
-			pros::delay(50);
-		}
-	}
-	loadTrim();
-	resetMotores();
-	int mode = 0;
-	bool prevCombo = false;
-	uint32_t lastLeftActive = 0, lastRightActive = 0;
-	uint32_t loopTick = pros::millis();
+	char msg[40] = "";
+	uint32_t msgHasta = 0;
 	while (true) {
-		bool combo = master.get_digital(DIGITAL_X) && master.get_digital(DIGITAL_Y) &&
-		             master.get_digital(DIGITAL_L1) && master.get_digital(DIGITAL_R1);
-		if (combo && !prevCombo) {
-			trimMode(master);
-			prevCombo = true; // hay que soltar los botones antes de poder volver a entrar
-			loopTick = pros::millis();
-			continue;
+		ovision::Pin p;
+		bool visto = ovision::closest(p);
+		int n = (int)ovision::detect().size();
+		pros::lcd::print(0, "VISION   A: calibrar a %.0f cm   B: camara", CALIB_CM);
+		pros::lcd::print(1, "pin: %s", visto ? p.nombre : "ninguno");
+		char barra[21];
+		int llenos = p.cercania / 5; // barra de 20: cada bloque son 5 puntos
+		for (int i = 0; i < 20; i++) barra[i] = i < llenos ? '#' : '.';
+		barra[20] = 0;
+		pros::lcd::print(2, "cercania %3d/100  [%s]", p.cercania, barra);
+		if (p.cm > 0) pros::lcd::print(3, "distancia %.0f cm", p.cm);
+		else pros::lcd::print(3, "distancia: sin calibrar (A)");
+		pros::lcd::print(4, "pines a la vista: %d", n);
+		pros::lcd::print(5, "%s", pros::millis() < msgHasta ? msg : "");
+		if (master.get_digital_new_press(DIGITAL_A)) {
+			bool ok = ovision::calibrate(CALIB_CM);
+			snprintf(msg, sizeof msg, ok ? "distancia calibrada" : "no veo ningun pin para calibrar");
+			msgHasta = pros::millis() + 2000;
 		}
-		prevCombo = combo;
-		// L1 sube / R1 baja el intake; no si X o Y estan apretados (L1/R1 son parte del combo del trim)
-		if (!master.get_digital(DIGITAL_X) && !master.get_digital(DIGITAL_Y)) {
-			if (master.get_digital_new_press(DIGITAL_L1)) subirMotores();
-			if (master.get_digital_new_press(DIGITAL_R1)) bajarMotores();
+		if (master.get_digital_new_press(DIGITAL_B)) {
+			ovision::tuneMode(master);
+			pros::lcd::register_btn1_cb(on_center_button);
 		}
-		// Sticks en pasos de 5 (hacia 0): diferencias chicas de lectura dan el mismo comando
-		int leftY = master.get_analog(ANALOG_LEFT_Y) / 5 * 5;
-		int rightY = master.get_analog(ANALOG_RIGHT_Y) / 5 * 5;
-		bool down = master.get_digital(DIGITAL_DOWN), up = master.get_digital(DIGITAL_UP);
-		bool left = master.get_digital(DIGITAL_LEFT), right = master.get_digital(DIGITAL_RIGHT);
-
-		if (abs(leftY) >= 5 || abs(rightY) >= 5) mode = 2;
-		else if (down || up || left || right) mode = 1;
-		else mode = 0;
-
-		switch (mode) {
-			case 0:
-				left_mg.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
-				right_mg.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
-				left_mg.brake(); // sin move(0) despues: reemplazaria al brake() y el motor dejaria de sostener
-				right_mg.brake();
-				break;
-			case 1:
-				left_mg.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
-				right_mg.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
-				if (down) moveTank(-127, -127);
-				else if (up) moveTank(127, 127);
-				else if (left) moveTank(-127, 127);
-				else moveTank(127, -127);
-				break;
-			case 2: {
-				// Un stick nunca vuelve a 0 justo con el otro: el lado soltado primero espera en coast
-				// y frena 150 ms despues, para que no se tuerza el robot.
-				uint32_t now = pros::millis();
-				if (abs(leftY) >= 5) lastLeftActive = now;
-				if (abs(rightY) >= 5) lastRightActive = now;
-				if (abs(leftY) < 5) leftY = 0;
-				if (abs(rightY) < 5) rightY = 0;
-				left_mg.set_brake_mode_all(leftY == 0 && now - lastLeftActive > 150 ? pros::E_MOTOR_BRAKE_HOLD : pros::E_MOTOR_BRAKE_COAST);
-				right_mg.set_brake_mode_all(rightY == 0 && now - lastRightActive > 150 ? pros::E_MOTOR_BRAKE_HOLD : pros::E_MOTOR_BRAKE_COAST);
-				moveTank(leftY, rightY);
-				if (now - lastLeftActive > 150) left_mg.brake();
-				if (now - lastRightActive > 150) right_mg.brake();
-				break;
-			}
-		}
-		pros::Task::delay_until(&loopTick, 10);
+		pros::delay(50);
 	}
 }
