@@ -5,6 +5,45 @@ ahh y se le pregunta a la IA
 -- NO NOS REEMPLAZARÁ LA IA --
 (al menos no en momentos tranquilos, en apuros, viva Claude Code)
 
+ExtConfig:
+* Averiguar como funciona los metodos de la MicroSD
+* Averiguar metodos de compresion sencillos para los paquetes de la MicroSD
+* Hacer metodos para que la escritura y lectura sea de segundo plano (en rings de escritura)
+* Hacer metodos para leer archivos de texto
+* Hacer metodos para leer archivos .cfg
+* Hacer metodos para leer archivos .json
+* Hacer metodos para manipular archivos binarios de forma sencilla
+* Usar el runid
+
+Sysinternals:
+* Averiguar como funcionan los loggers
+* Hacer el sistema de logs principal (logs/log_XXXXX.txt)
+* Hacer el sistema de logs secundario
+* Hacer el sistema de errores (el advisor)
+* Hacer el sistema de muestreo por control
+* Hacer el sistema de muestreo por LLEMU
+
+APS:
+* Investigar un buen APS
+* Como hacer que no haya el asqueroso Drift del diablo
+* Organizar las ecuaciones
+* Hacer el script para detectar el desplazamiento
+* Hacer el script para ubicar en el mapa y los setget
+* Hacer el mapa de Override
+* Hacer el PID Tracking Utility (para autonomos)
+
+LonTune:
+* Investigar controladores PID
+* Hacer el controlador PID (facil de usar para cualquier cosa)
+* Hacer el PID ToolTuning
+* Hacer el Mass ToolTuning
+
+Unity:
+* Investigar cuales son las medidas mas usadas en PROS
+* Investigar como convertirlas
+* Investigar como funcionan los operadores _in y advisor
+* Hacer las unidades
+
 NeoCode:
 * Averiguar como funciona una extension de VSCODE
 * Ver si es mejor usar cpp o hpp idk como integrarlo
@@ -18,8 +57,45 @@ NeoCode:
 * Ver como detectar que la extension detecte un project.pros
 * Compilar la extension y documentarla
 
+HeliosManager:
+* Averiguar como funcionarían los profiles
+* Averiguar como funcionarían las actions
+* Averiguar como funcionarían los hooks
+* Desarrollar el lanzador de los profiles
+* Desarrollar el lanzador de las actions
+* Desarrollar el lanzador de los hooks
+* Desarrollar el registrador (strap)
+
+Neobjects:
+* Investigar QUE debería tener una clase Neobject comun y de que me sirven los Neobjects
+* Investigar cuales son los objetos principales para desarrollar los Neobjects (poner acá)
+
+Artifacts:
+* Investigar QUE mecanismos son muy comunes ahorita y como debería desarrollarlos (poner acá)
+
+RecordNReplay:
+* Documentarme bien de un modelo RecordNReplay
+* Reformar todo el RecordNReplay
+* Reescribirlo manualmente todo, y entenderlo
+* Hacer el control, eliminar todos los attachers
+* Leer el Track del PID Tracking Utility
+* Hacer el segundo mdoo para grabar las actions
+* Hacer el reproductor de actions
+
 Molotov:
 * Averiguar como funciona bien una libreria grafica
 * Documentar las necesidades basicas que debe cubrir Molotov
 * Documentar la lista de elementos de UI basicos
-* Documentar que puede hacer Molotov por las graficas 
+* Documentar que puede hacer Molotov por las graficas (como APS, objects, vision, etc)
+* Documentar como podría funcionar el imgrenderer
+* Hacer el touch handler
+* Hacer los elementos basicos de Molotov
+* Hacer la grafica de la pista y el robot
+* Hacer los elementos avanzados de Molotov
+* Hacer los elementos de render de Molotov
+* Hacer los animadores
+
+Utildef:
+* Al final, ver que nos serviría (digamos que se va desarrollando en tiempo real)
+
+
