@@ -21,10 +21,47 @@ ExtConfig:
             - fputs(texto string, FILE archivo): escribe una cadena
             - fwrite(*buffer, tamaño en bytes de cada elemento, cantidad de elementos a escribir, FILE archivo): escribe bytes crudos
             - fflush(FILE archivo): fuerza a guardar sin cerrarlo
-            - 
-
-* Averiguar metodos de compresion sencillos para los paquetes de la MicroSD
+            - fclose(FILE archivo): guarda y cierra el archivo
+        - Para leer en el archivo, usamos:
+            - fgets(char[x] buffer, tamaño del buffer, FILE archivo): guarda todo hasta que encuentra \n, o hasta que se llena el buffer (se debe almacenar en char[x])
+                - Para buscar la posicion de un caracter, se usa: strcspn(buffer, "text")
+                - Entonces para borrar el \n, se usa: linea[strcspn(linea, "\r\n")] = '\0'
+            - fread(*variable, tamaño en bytes de cada elementos, cantidad a elementos a escribir, FILE archivo): lee bytes crudos y los asigna en la variable
+        - El lector del archivo tiene un cursor interno, que se puede mover.
+            - Se mueve con fseek(FILE archivo, cuantos bytes moverse, desde donde moverse)
+            - "Desde donde moverse" se llama origen, y tenemos los siguientes:
+                - SEEK_SET: inicio del archivo
+                - SEEK_CUR: posicion actual del cursor
+                - SEEK_END: final del archivo
+            - Tambien podemos saber donde está el cursor desde ftell(FILE archivo)
+    - Se remueven los archivos usando: remove(path)
+    - Se renombran los archivos usando: rename(path, newpath)            
+* Averiguar metodos de compresion sencillos para los paquetes de la MicroSD ✅
+    - No vale la pena usar metodos de compresión en PROS
 * Hacer metodos para que la escritura y lectura sea de segundo plano (en rings de escritura)
+    - FreeRTOS:
+        - El codigo corre en un solo nucleo, no hay paralelizacion real. El scheduler decide cual usa en cada instante, y la cambia cada tick (1 tick = 1 ms)
+        - Cada tarea tiene una prioridad, desde 1 a 16:
+            - TASK_PRIORITY_MIN (1): Los procesos de mas fondo, menos importantes
+            - TASK_PRIORITY_DEFAULT (8): Acá corren las funciones normales, incluyendo autonomous y opcontrol
+            - TASK_PRIORITY_MAX (16): Los procesos mas prioritarios, usarlos con cuidado
+        - El shceduler tiene unas reglas:
+            - Corre siempre la tarea de mayor prioridad que esté preparada
+            - Si una tarea de mayor prioridad despierta, interrumpe a la que estaba corriendo
+            - Si hay varias con la misma prioridad, se turnan en rondas
+        - Las tareas tienen estados:
+            - RUNNING: Usando la CPU
+            - READY: Lista para usar la CPU, aunque hay otra usandola
+            - BLOCKED: Espera algo (delay, notification, mutex). No consume CPU
+            - SUSPENDED: Suspendida a proposito, o eliminada
+        - Como manejar las tareas:
+            - t.suspend();
+            - t.resume();
+            . t.remove();
+            - t.set_priority(x);
+            - t.get_state();
+            - pros::Task::current(); : obtiene la tarea actual
+        - En las tareas, tenemos delay_until, que es mejor, debido a que pros::delay(x) funciona esperando x, mas lo que demore el codigo en ejecutar. task.delay_until()
 * Hacer metodos para leer archivos de texto
 * Hacer metodos para leer archivos .cfg
 * Hacer metodos para leer archivos .json
