@@ -6,7 +6,23 @@ ahh y se le pregunta a la IA
 (al menos no en momentos tranquilos, en apuros, viva Claude Code)
 
 ExtConfig:
-* Averiguar como funciona los metodos de la MicroSD
+* Averiguar como funciona los metodos de la MicroSD ✅
+    - Para revisar que está la MicroSD: pros::usd::is_installed() -> True o False
+    - Para manipularlos, usamos stdio:
+        - Declaramos el archivo usando FILE *archivo;
+        - Para abrir el archivo, usamos fopen("path", "mode");
+            - Modo "r": lee el contenido (el archivo debe existir)
+            - Modo "w": crea o SOBREESCRIBE el archivo
+            - Modo "a": escribe al final del archivo o lo crea si no existe
+            - Modo "r+", "w+", "a+": Lectura y escritura ambos
+            - Modo "rb", "wb", "ab": El archivo se trata en bytes, no lo traduce
+        - Para escribir en el archivo, usamos:
+            - fprintf(FILE archivo, texto formateado): tipo printf
+            - fputs(texto string, FILE archivo): escribe una cadena
+            - fwrite(*buffer, tamaño en bytes de cada elemento, cantidad de elementos a escribir, FILE archivo): escribe bytes crudos
+            - fflush(FILE archivo): fuerza a guardar sin cerrarlo
+            - 
+
 * Averiguar metodos de compresion sencillos para los paquetes de la MicroSD
 * Hacer metodos para que la escritura y lectura sea de segundo plano (en rings de escritura)
 * Hacer metodos para leer archivos de texto
