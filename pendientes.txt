@@ -36,7 +36,8 @@ ExtConfig:
             - Tambien podemos saber donde está el cursor desde ftell(FILE archivo)
     - Se remueven los archivos usando: remove(path)
     - Se renombran los archivos usando: rename(path, newpath)            
-* Averiguar metodos de compresion sencillos para los paquetes de la MicroSD ✅
+* Averiguar metodos de compresion sencillos para los paquetes de la MicroSD 
+* Hacer los metodos basicos de lectura/escritura ✅
     - No vale la pena usar metodos de compresión en PROS
 * Hacer metodos para que la escritura y lectura sea de segundo plano (en rings de escritura)
     - FreeRTOS:
@@ -61,10 +62,15 @@ ExtConfig:
             - t.set_priority(x);
             - t.get_state();
             - pros::Task::current(); : obtiene la tarea actual
-        - En las tareas, tenemos delay_until, que es mejor, debido a que pros::delay(x) funciona esperando x, mas lo que demore el codigo en ejecutar. task.delay_until()
+        - En las tareas, tenemos delay_until, que es mejor, debido a que pros::delay(x) funciona esperando x, mas lo que demore el codigo en ejecutar. task.delay_until(x) espera exactamente x ms.
+        - Para despertar una tarea, se usa t.notify();
+            - Dentro de la tarea, para esperar la notificacion, se usa "pros::Task::notify_take(true, TIMEOUT_MAX);", como un delay
 * Hacer metodos para leer archivos de texto
 * Hacer metodos para leer archivos .cfg
 * Hacer metodos para leer archivos .json
+    - Decidimos usar cJSON, una librería super ligera de C, externa, debido a la filosofia de "No reinventar la rueda"
+        - https://github.com/davegamble/cjson
+* Hacer metodos para leer archivos .csv
 * Hacer metodos para manipular archivos binarios de forma sencilla
 * Usar el runid
 
